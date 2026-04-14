@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgis/postgis:15-3.3
+    container_name: world_event_tracker_db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: world_event_tracker
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - tracker_network
+
+  redis:
+    image: redis:7-alpine
+    container_name: world_event_tracker_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - tracker_network
+
+networks:
+  tracker_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
