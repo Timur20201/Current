@@ -1,8 +1,8 @@
 services:
-  # Backend: FastAPI + PostgreSQL + Redis
+  # 1. БЕКЕНД (Python/FastAPI)
   - type: web
     name: event-tracker-api
-    env: python
+    runtime: python
     buildCommand: pip install -r backend/requirements.txt
     startCommand: uvicorn backend.app.main:app --host 0.0.0.0 --port $PORT
     envVars:
@@ -15,24 +15,21 @@ services:
           type: redis
           name: event-tracker-redis
           property: connectionString
+      - key: PYTHON_VERSION
+        value: 3.10.0
 
-  # Frontend: Flutter Web (Nginx)
+  # 2. ФРОНТЕНД (Static Site)
   - type: web
     name: event-tracker-web
-    env: static
+    runtime: static
     buildCommand: "cd frontend && flutter build web --release --web-renderer canvaskit"
     staticPublishPath: frontend/build/web
-    envVars:
-      - key: API_URL
-        fromService:
-          type: web
-          name: event-tracker-api
-          property: url
 
 databases:
   - name: event-tracker-db
     plan: free
-    ipAllowList: [] # Дозволити доступ лише внутрішнім сервісам
+    databaseName: tracker_db
+    user: tracker_user
 
 redis:
   - name: event-tracker-redis
